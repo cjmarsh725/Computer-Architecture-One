@@ -68,21 +68,32 @@ class CPU {
         // from the memory address pointed to by the PC. (I.e. the PC holds the
         // index into memory of the instruction that's about to be executed
         // right now.)
-
-        // !!! IMPLEMENT ME
+        const IR = this.ram.read(this.PC);
 
         // Debugging output
         //console.log(`${this.PC}: ${IR.toString(2)}`);
 
         // Get the two bytes in memory _after_ the PC in case the instruction
         // needs them.
-
-        // !!! IMPLEMENT ME
+        const IR2 = this.ram.read(this.PC + 1);
+        const IR3 = this.ram.read(this.PC + 2);
 
         // Execute the instruction. Perform the actions for the instruction as
         // outlined in the LS-8 spec.
-
-        // !!! IMPLEMENT ME
+        switch(IR.toString(2)) {
+            case "10011001":
+                this.reg[IR2] = IR3;
+                this.PC += 3;
+                break;
+            case "1000011":
+                console.log(this.reg[IR2]);
+                this.PC += 2;
+                break;
+            default:
+            case "1":
+                this.stopClock();
+                break;
+        }
 
         // Increment the PC register to go to the next instruction. Instructions
         // can be 1, 2, or 3 bytes long. Hint: the high 2 bits of the
