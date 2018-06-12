@@ -2,6 +2,13 @@
  * LS-8 v2.0 emulator skeleton code
  */
 
+const Op = {
+    LDI: 0b10011001,
+    PRN: 0b01000011,
+    HLT: 0b00000001,
+    MUL: 0b10101010
+}
+
 /**
  * Class for simulating a simple Computer (CPU & memory)
  */
@@ -55,8 +62,7 @@ class CPU {
     alu(op, regA, regB) {
         switch (op) {
             case 'MUL':
-                // !!! IMPLEMENT ME
-                break;
+                return this.reg[regA] * this.reg[regB];
         }
     }
 
@@ -80,17 +86,25 @@ class CPU {
 
         // Execute the instruction. Perform the actions for the instruction as
         // outlined in the LS-8 spec.
-        switch(IR.toString(2)) {
-            case "10011001":
+        switch(IR) {
+            case Op.LDI:
                 this.reg[IR2] = IR3;
                 this.PC += 3;
                 break;
-            case "1000011":
+
+            case Op.PRN:
                 console.log(this.reg[IR2]);
                 this.PC += 2;
                 break;
+
+            case Op.MUL:
+                this.reg[IR2] = this.alu('MUL', IR2, IR3);
+                this.PC += 3;
+                break;
+
             default:
-            case "1":
+                console.log('Unhandled Op Code: ', IR.toString(2));
+            case Op.HLT:
                 this.stopClock();
                 break;
         }
