@@ -6,7 +6,9 @@ const Op = {
     LDI: 0b10011001,
     PRN: 0b01000011,
     HLT: 0b00000001,
-    MUL: 0b10101010
+    MUL: 0b10101010,
+    PUSH: 0b01001101,
+    POP: 0b01001100
 }
 
 /**
@@ -24,6 +26,7 @@ class CPU {
         
         // Special-purpose registers
         this.PC = 0; // Program Counter
+        this.SP = 244;
     }
     
     /**
@@ -101,6 +104,18 @@ class CPU {
                 this.reg[IR2] = this.alu('MUL', IR2, IR3);
                 this.PC += 3;
                 break;
+
+            case Op.PUSH:
+                this.SP--;
+                this.ram.write(this.SP, this.reg[IR2]);
+                this.PC += 2;
+                break;
+
+            case Op.POP:
+                this.reg[IR2] = this.ram.read(this.SP);
+                this.SP++;
+                this.PC += 2;
+                break
 
             default:
                 console.log('Unhandled Op Code: ', IR.toString(2));
