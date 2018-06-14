@@ -10,7 +10,8 @@ const Op = {
     PUSH: 0b01001101,
     POP: 0b01001100,
     CALL: 0b01001000,
-    RET: 0b00001001
+    RET: 0b00001001,
+    ADD: 0b10101000
 }
 
 const SP = 7;
@@ -71,6 +72,8 @@ class CPU {
         switch (op) {
             case 'MUL':
                 return this.reg[regA] * this.reg[regB];
+            case 'ADD':
+                return this.reg[regA] + this.reg[regB];
         }
     }
 
@@ -110,20 +113,33 @@ class CPU {
                 this.PC += 3;
                 break;
 
+            case Op.ADD:
+                this.reg[IR2] = this.alu('ADD', IR2, IR3);
+                this.PC += 3;
+                break;
+
             case Op.PUSH:
-                this.SP--;
+                this.reg[SP]--;
                 this.ram.write(this.reg[SP], this.reg[IR2]);
                 this.PC += 2;
                 break;
 
             case Op.POP:
                 this.reg[IR2] = this.ram.read(this.reg[SP]);
-                this.SP++;
+                this.reg[SP]++;
                 this.PC += 2;
                 break;
 
-            //case Op.CALL:
-             //   this.reg
+            case Op.CALL:
+                this.reg[SP]--;
+                this.ram.write(this.reg[SP], this.PC + 2);
+                this.PC = this.reg[IR2];
+                break;
+
+            case Op.RET:
+                this.PC = this.ram.read(this.reg[SP]);
+                this.reg[SP]++;
+                break;
 
             default:
                 console.log('Unhandled Op Code: ', IR.toString(2));
