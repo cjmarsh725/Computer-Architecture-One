@@ -8,8 +8,12 @@ const Op = {
     HLT: 0b00000001,
     MUL: 0b10101010,
     PUSH: 0b01001101,
-    POP: 0b01001100
+    POP: 0b01001100,
+    CALL: 0b01001000,
+    RET: 0b00001001
 }
+
+const SP = 7;
 
 /**
  * Class for simulating a simple Computer (CPU & memory)
@@ -26,7 +30,8 @@ class CPU {
         
         // Special-purpose registers
         this.PC = 0; // Program Counter
-        this.SP = 244;
+
+        this.reg[SP] = 244;
     }
     
     /**
@@ -107,15 +112,18 @@ class CPU {
 
             case Op.PUSH:
                 this.SP--;
-                this.ram.write(this.SP, this.reg[IR2]);
+                this.ram.write(this.reg[SP], this.reg[IR2]);
                 this.PC += 2;
                 break;
 
             case Op.POP:
-                this.reg[IR2] = this.ram.read(this.SP);
+                this.reg[IR2] = this.ram.read(this.reg[SP]);
                 this.SP++;
                 this.PC += 2;
-                break
+                break;
+
+            //case Op.CALL:
+             //   this.reg
 
             default:
                 console.log('Unhandled Op Code: ', IR.toString(2));
